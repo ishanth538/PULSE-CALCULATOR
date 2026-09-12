@@ -1,0 +1,17 @@
+{
+  "name": "Pulse Calculator",
+  "short_name": "Pulse",
+  "description": "Pulse Calculator - Smart, Fast and Scientific Calculator",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#08080c",
+  "theme_color": "#11111a",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "./icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
