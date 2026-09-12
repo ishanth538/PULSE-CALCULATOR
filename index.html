@@ -1,0 +1,1851 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pulse Calculator</title>
+
+<style>
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    -webkit-tap-highlight-color: transparent;
+}
+
+:root {
+    --bg: #05070d;
+    --panel: rgba(17, 23, 36, 0.78);
+    --display: rgba(5, 10, 19, 0.92);
+    --key: rgba(27, 35, 51, 0.82);
+    --key-hover: rgba(47, 59, 82, 0.95);
+    --text: #f7f9ff;
+    --muted: #7f8ba3;
+    --blue: #5d9bff;
+    --cyan: #35d9ff;
+    --purple: #8a5cff;
+    --pink: #c75cff;
+    --red: #ff5d76;
+    --border: rgba(255,255,255,0.09);
+}
+
+body {
+    min-height: 100vh;
+    background:
+        radial-gradient(
+            circle at 20% 0%,
+            rgba(53,217,255,0.13),
+            transparent 30%
+        ),
+        radial-gradient(
+            circle at 90% 20%,
+            rgba(138,92,255,0.16),
+            transparent 30%
+        ),
+        radial-gradient(
+            circle at 50% 100%,
+            rgba(93,155,255,0.08),
+            transparent 35%
+        ),
+        var(--bg);
+    color: var(--text);
+    font-family: Arial, Helvetica, sans-serif;
+    overflow-x: hidden;
+}
+
+/* PREMIUM BACKGROUND GLOW */
+
+body::before {
+    content: "";
+    position: fixed;
+    width: 280px;
+    height: 280px;
+    left: -130px;
+    top: 35%;
+    border-radius: 50%;
+    background: rgba(53,217,255,0.08);
+    filter: blur(80px);
+    pointer-events: none;
+}
+
+body::after {
+    content: "";
+    position: fixed;
+    width: 300px;
+    height: 300px;
+    right: -150px;
+    bottom: 10%;
+    border-radius: 50%;
+    background: rgba(138,92,255,0.10);
+    filter: blur(90px);
+    pointer-events: none;
+}
+
+button {
+    font-family: inherit;
+    cursor: pointer;
+    border: none;
+    outline: none;
+}
+
+.app {
+    width: 100%;
+    max-width: 520px;
+    min-height: 100vh;
+    margin: auto;
+    padding: 16px;
+    position: relative;
+    z-index: 1;
+}
+
+/* HEADER */
+
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+}
+
+.logo-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 16px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 23px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #35d9ff,
+            #5d7cff 48%,
+            #9b52ff
+        );
+
+    box-shadow:
+        0 8px 30px rgba(53,217,255,0.20),
+        0 4px 20px rgba(138,92,255,0.20),
+        inset 0 1px 1px rgba(255,255,255,0.35);
+
+    position: relative;
+    overflow: hidden;
+}
+
+.logo-icon::after {
+    content: "";
+    position: absolute;
+    width: 80px;
+    height: 20px;
+    background: rgba(255,255,255,0.22);
+    transform: rotate(-35deg);
+    top: -15px;
+    left: -35px;
+}
+
+.logo h1 {
+    font-size: 19px;
+    letter-spacing: -0.4px;
+}
+
+.logo p {
+    color: var(--muted);
+    font-size: 8px;
+    letter-spacing: 1.8px;
+    margin-top: 5px;
+}
+
+.icon-btn {
+    width: 43px;
+    height: 43px;
+    margin-left: 4px;
+
+    border: 1px solid var(--border);
+    border-radius: 14px;
+
+    background: rgba(18,24,37,0.72);
+    color: var(--text);
+
+    font-size: 17px;
+
+    box-shadow:
+        inset 0 1px 1px rgba(255,255,255,0.05),
+        0 8px 25px rgba(0,0,0,0.15);
+
+    backdrop-filter: blur(15px);
+
+    transition:
+        transform 0.15s ease,
+        background 0.15s ease;
+}
+
+.icon-btn:active {
+    transform: scale(0.91);
+}
+
+/* DISPLAY */
+
+.display {
+    min-height: 190px;
+    padding: 22px;
+
+    border-radius: 28px;
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(13,20,33,0.96),
+            rgba(5,10,18,0.96)
+        );
+
+    border: 1px solid rgba(255,255,255,0.09);
+
+    box-shadow:
+        0 25px 70px rgba(0,0,0,0.35),
+        inset 0 1px 1px rgba(255,255,255,0.05);
+
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+
+    overflow: hidden;
+    position: relative;
+
+    margin-bottom: 11px;
+}
+
+.display::before {
+    content: "";
+    position: absolute;
+
+    width: 180px;
+    height: 180px;
+
+    right: -80px;
+    top: -100px;
+
+    border-radius: 50%;
+
+    background: rgba(53,217,255,0.09);
+
+    filter: blur(25px);
+}
+
+.display::after {
+    content: "";
+    position: absolute;
+
+    width: 150px;
+    height: 150px;
+
+    left: -90px;
+    bottom: -100px;
+
+    border-radius: 50%;
+
+    background: rgba(138,92,255,0.08);
+
+    filter: blur(25px);
+}
+
+.mode {
+    color: var(--cyan);
+    font-size: 9px;
+    letter-spacing: 1.7px;
+    margin-bottom: auto;
+    position: relative;
+    z-index: 2;
+}
+
+.expression {
+    color: #707d95;
+    text-align: right;
+    font-size: 16px;
+    min-height: 25px;
+
+    overflow-x: auto;
+    white-space: nowrap;
+
+    position: relative;
+    z-index: 2;
+
+    scrollbar-width: none;
+}
+
+.expression::-webkit-scrollbar,
+.result::-webkit-scrollbar {
+    display: none;
+}
+
+.result {
+    text-align: right;
+
+    font-size: clamp(42px, 11vw, 58px);
+    font-weight: 700;
+
+    margin-top: 7px;
+
+    white-space: nowrap;
+    overflow-x: auto;
+
+    letter-spacing: -2px;
+
+    position: relative;
+    z-index: 2;
+
+    background:
+        linear-gradient(
+            100deg,
+            #ffffff,
+            #dce8ff
+        );
+
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+
+/* TOOLS */
+
+.tools {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr 1fr;
+
+    gap: 8px;
+    margin-bottom: 9px;
+}
+
+.tool {
+    height: 45px;
+
+    border: 1px solid var(--border);
+    border-radius: 15px;
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(25,34,51,0.9),
+            rgba(14,20,32,0.9)
+        );
+
+    color: #dfe7f7;
+
+    font-size: 11px;
+    font-weight: 700;
+
+    box-shadow:
+        inset 0 1px 1px rgba(255,255,255,0.05),
+        0 7px 20px rgba(0,0,0,0.13);
+
+    backdrop-filter: blur(15px);
+
+    transition:
+        transform 0.12s ease,
+        border 0.12s ease;
+}
+
+.tool:active {
+    transform: scale(0.95);
+}
+
+.tool:first-child {
+    color: var(--cyan);
+}
+
+/* SCIENTIFIC */
+
+.scientific {
+    display: none;
+
+    grid-template-columns: repeat(5,1fr);
+
+    gap: 7px;
+
+    padding: 9px;
+
+    margin-bottom: 9px;
+
+    border-radius: 19px;
+
+    background:
+        rgba(15,22,35,0.85);
+
+    border: 1px solid var(--border);
+
+    box-shadow:
+        0 15px 40px rgba(0,0,0,0.20),
+        inset 0 1px 1px rgba(255,255,255,0.04);
+
+    backdrop-filter: blur(18px);
+}
+
+.scientific.show {
+    display: grid;
+    animation: scientificOpen 0.2s ease;
+}
+
+@keyframes scientificOpen {
+    from {
+        opacity: 0;
+        transform: translateY(-6px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* KEYPAD */
+
+.keypad {
+    display: grid;
+
+    grid-template-columns: repeat(4,1fr);
+
+    gap: 9px;
+}
+
+/* KEYS */
+
+.key {
+    min-height: 65px;
+
+    border-radius: 18px;
+
+    border: 1px solid rgba(255,255,255,0.065);
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(30,40,58,0.94),
+            rgba(20,27,41,0.94)
+        );
+
+    color: #f5f7ff;
+
+    font-size: 20px;
+    font-weight: 700;
+
+    box-shadow:
+        0 8px 18px rgba(0,0,0,0.20),
+        inset 0 1px 1px rgba(255,255,255,0.055);
+
+    transition:
+        transform 0.08s ease,
+        background 0.1s ease,
+        box-shadow 0.1s ease;
+}
+
+.key:hover {
+    background:
+        linear-gradient(
+            145deg,
+            rgba(42,54,76,0.98),
+            rgba(25,34,51,0.98)
+        );
+}
+
+.key:active {
+    transform: scale(0.91);
+
+    box-shadow:
+        0 3px 8px rgba(0,0,0,0.25),
+        inset 0 2px 5px rgba(0,0,0,0.20);
+}
+
+/* NUMBER KEYS */
+
+.keypad .key:nth-child(n+5):not(.operator):not(.equal) {
+    color: #eef3ff;
+}
+
+/* OPERATORS */
+
+.operator {
+    color: var(--cyan);
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(22,42,61,0.95),
+            rgba(19,29,44,0.95)
+        );
+}
+
+/* CLEAR */
+
+.clear {
+    color: var(--red);
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(60,27,36,0.85),
+            rgba(31,20,28,0.9)
+        );
+}
+
+/* EQUAL */
+
+.equal {
+    color: white;
+
+    border: none;
+
+    background:
+        linear-gradient(
+            145deg,
+            #35cfff,
+            #6378ff 48%,
+            #9654ff
+        );
+
+    box-shadow:
+        0 9px 28px rgba(79,126,255,0.32),
+        inset 0 1px 1px rgba(255,255,255,0.35);
+
+    position: relative;
+    overflow: hidden;
+}
+
+.equal::before {
+    content: "";
+
+    position: absolute;
+
+    width: 100%;
+    height: 45px;
+
+    top: -25px;
+    left: 0;
+
+    background: rgba(255,255,255,0.14);
+
+    transform: skewY(-8deg);
+}
+
+/* FOOTER */
+
+.footer {
+    text-align: center;
+
+    color: #59657b;
+
+    font-size: 8px;
+
+    letter-spacing: 2px;
+
+    padding: 19px 0 7px;
+}
+
+/* HISTORY */
+
+.history {
+    display: none;
+
+    position: fixed;
+
+    right: 0;
+    top: 0;
+
+    width: min(430px,94%);
+
+    height: 100%;
+
+    z-index: 50;
+
+    padding: 20px;
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(18,25,39,0.98),
+            rgba(7,11,19,0.98)
+        );
+
+    border-left: 1px solid var(--border);
+
+    box-shadow:
+        -20px 0 60px rgba(0,0,0,0.40);
+
+    backdrop-filter: blur(25px);
+
+    overflow-y: auto;
+}
+
+.history.show {
+    display: block;
+    animation: historyIn 0.22s ease;
+}
+
+@keyframes historyIn {
+    from {
+        transform: translateX(100%);
+    }
+
+    to {
+        transform: translateX(0);
+    }
+}
+
+.history-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    margin-bottom: 18px;
+}
+
+.history-head h2 {
+    font-size: 21px;
+}
+
+.history-clear {
+    width: 100%;
+    height: 44px;
+
+    border-radius: 14px;
+
+    background: rgba(255,93,118,0.08);
+
+    border: 1px solid rgba(255,93,118,0.15);
+
+    color: var(--red);
+
+    font-weight: 700;
+
+    margin-bottom: 13px;
+}
+
+.history-item {
+    padding: 15px;
+
+    margin-bottom: 9px;
+
+    border-radius: 16px;
+
+    background:
+        rgba(9,14,23,0.82);
+
+    border: 1px solid var(--border);
+
+    box-shadow:
+        inset 0 1px 1px rgba(255,255,255,0.03);
+}
+
+.history-exp {
+    color: #78849b;
+    font-size: 13px;
+}
+
+.history-answer {
+    margin-top: 7px;
+
+    font-size: 21px;
+    font-weight: 700;
+
+    color: #eef4ff;
+}
+
+/* MOBILE */
+
+@media (max-width: 370px) {
+
+    .app {
+        padding: 10px;
+    }
+
+    .keypad {
+        gap: 7px;
+    }
+
+    .key {
+        min-height: 56px;
+        border-radius: 16px;
+    }
+
+    .result {
+        font-size: 40px;
+    }
+
+    .display {
+        min-height: 160px;
+        padding: 17px;
+    }
+  }
+  /* =========================================
+   PREMIUM STARTUP SCREEN
+   ========================================= */
+
+.startup {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    background:
+        radial-gradient(
+            circle at center,
+            rgba(45,120,255,0.16),
+            transparent 35%
+        ),
+        #05070d;
+
+    animation: startupFade 0.7s ease 2.3s forwards;
+}
+
+.startup-glow {
+    position: absolute;
+
+    width: 190px;
+    height: 190px;
+
+    border-radius: 50%;
+
+    background:
+        radial-gradient(
+            circle,
+            rgba(53,217,255,0.22),
+            rgba(138,92,255,0.08),
+            transparent 70%
+        );
+
+    filter: blur(12px);
+
+    animation: glowPulse 1.5s ease-in-out infinite;
+}
+
+.startup-icon {
+    width: 92px;
+    height: 92px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 28px;
+
+    font-size: 43px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #35d9ff,
+            #6378ff 50%,
+            #9654ff
+        );
+
+    box-shadow:
+        0 0 30px rgba(53,217,255,0.35),
+        0 0 65px rgba(138,92,255,0.22),
+        inset 0 1px 2px rgba(255,255,255,0.4);
+
+    position: relative;
+    z-index: 2;
+
+    animation:
+        startupIcon 0.9s cubic-bezier(.2,.8,.2,1),
+        iconFloat 2s ease-in-out 1s infinite;
+}
+
+.startup-name {
+    margin-top: 22px;
+
+    font-size: 31px;
+    font-weight: 800;
+
+    letter-spacing: 7px;
+
+    background:
+        linear-gradient(
+            90deg,
+            #35d9ff,
+            #ffffff,
+            #9654ff
+        );
+
+    -webkit-background-clip: text;
+    background-clip: text;
+
+    color: transparent;
+
+    position: relative;
+    z-index: 2;
+
+    animation: nameIn 0.8s ease 0.25s both;
+}
+
+.startup-name.calculator {
+    margin-top: 3px;
+
+    font-size: 12px;
+    letter-spacing: 5px;
+
+    color: #8994a8;
+
+    background: none;
+    -webkit-background-clip: initial;
+    background-clip: initial;
+
+    animation-delay: 0.45s;
+}
+
+.pulse-line {
+    width: 190px;
+    height: 35px;
+
+    margin-top: 22px;
+
+    position: relative;
+    overflow: hidden;
+
+    opacity: 0;
+
+    animation:
+        pulseAppear 0.5s ease 0.8s forwards;
+}
+
+.pulse-line::before {
+    content: "";
+
+    position: absolute;
+
+    left: 0;
+    right: 0;
+    top: 17px;
+
+    height: 1px;
+
+    background: rgba(53,217,255,0.25);
+}
+
+.pulse-line span {
+    position: absolute;
+
+    left: -70px;
+    top: 17px;
+
+    width: 70px;
+    height: 2px;
+
+    background:
+        linear-gradient(
+            90deg,
+            transparent,
+            #35d9ff,
+            #9654ff
+        );
+
+    box-shadow:
+        0 0 10px #35d9ff;
+
+    animation: pulseMove 1.1s linear infinite;
+}
+
+.startup-subtitle {
+    margin-top: 10px;
+
+    color: #657083;
+
+    font-size: 8px;
+
+    letter-spacing: 3px;
+
+    position: relative;
+    z-index: 2;
+
+    animation: nameIn 0.8s ease 0.7s both;
+}
+
+.loading {
+    width: 120px;
+    height: 3px;
+
+    margin-top: 25px;
+
+    border-radius: 10px;
+
+    background: rgba(255,255,255,0.08);
+
+    overflow: hidden;
+
+    position: relative;
+    z-index: 2;
+}
+
+.loading-bar {
+    width: 0%;
+    height: 100%;
+
+    border-radius: 10px;
+
+    background:
+        linear-gradient(
+            90deg,
+            #35d9ff,
+            #6378ff,
+            #9654ff
+        );
+
+    box-shadow:
+        0 0 10px rgba(53,217,255,0.7);
+
+    animation: loading 2.1s ease forwards;
+}
+
+
+/* STARTUP ANIMATIONS */
+
+@keyframes startupIcon {
+
+    0% {
+        opacity: 0;
+        transform: scale(0.45) rotate(-12deg);
+    }
+
+    70% {
+        opacity: 1;
+        transform: scale(1.08) rotate(2deg);
+    }
+
+    100% {
+        transform: scale(1) rotate(0deg);
+    }
+}
+
+@keyframes iconFloat {
+
+    0%,100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-5px);
+    }
+}
+
+@keyframes glowPulse {
+
+    0%,100% {
+        transform: scale(0.85);
+        opacity: 0.6;
+    }
+
+    50% {
+        transform: scale(1.15);
+        opacity: 1;
+    }
+}
+
+@keyframes nameIn {
+
+    from {
+        opacity: 0;
+        transform: translateY(12px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes pulseAppear {
+
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes pulseMove {
+
+    from {
+        left: -70px;
+    }
+
+    to {
+        left: 190px;
+    }
+}
+
+@keyframes loading {
+
+    from {
+        width: 0%;
+    }
+
+    to {
+        width: 100%;
+    }
+}
+
+@keyframes startupFade {
+
+    to {
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+    }
+}
+</style>
+</head>
+
+<body>
+<!-- PREMIUM STARTUP SCREEN -->
+
+<div class="startup" id="startup">
+
+    <div class="startup-glow"></div>
+
+    <div class="startup-icon">
+        ⚡
+    </div>
+
+    <div class="startup-name">
+        PULSE
+    </div>
+
+    <div class="startup-name calculator">
+        CALCULATOR
+    </div>
+
+    <div class="pulse-line">
+        <span></span>
+    </div>
+
+    <div class="startup-subtitle">
+        SCIENTIFIC EDITION
+    </div>
+
+    <div class="loading">
+        <div class="loading-bar"></div>
+    </div>
+
+</div>
+<div class="app">
+
+<div class="header">
+
+<div class="logo">
+<div class="logo-icon">⚡</div>
+<div>
+<h1>Pulse Calculator</h1>
+<p>SMART • FAST • SCIENTIFIC</p>
+</div>
+</div>
+
+<div>
+<button class="icon-btn" onclick="toggleTheme()">☀️</button>
+<button class="icon-btn" onclick="openHistory()">📜</button>
+</div>
+
+</div>
+
+
+<div class="display">
+
+<div class="mode" id="mode">DEG • READY</div>
+
+<div class="expression" id="expression"></div>
+
+<div class="result" id="result">0</div>
+
+</div>
+
+
+<div class="tools">
+
+<button class="tool" onclick="toggleScientific()">
+🧪 Scientific
+</button>
+
+<button class="tool" id="angle" onclick="toggleAngle()">
+DEG
+</button>
+
+<button class="tool" onclick="copyResult()">
+📋 Copy
+</button>
+
+</div>
+
+
+<div class="scientific" id="scientific">
+
+<button class="key" onclick="add('sin(')">sin</button>
+<button class="key" onclick="add('cos(')">cos</button>
+<button class="key" onclick="add('tan(')">tan</button>
+<button class="key" onclick="add('log(')">log</button>
+<button class="key" onclick="add('ln(')">ln</button>
+
+<button class="key" onclick="add('sqrt(')">√</button>
+<button class="key" onclick="add('^2')">x²</button>
+<button class="key" onclick="add('^3')">x³</button>
+<button class="key" onclick="add('^')">xʸ</button>
+<button class="key" onclick="add('!')">x!</button>
+
+<button class="key" onclick="add('π')">π</button>
+<button class="key" onclick="add('e')">e</button>
+<button class="key" onclick="add('(')">(</button>
+<button class="key" onclick="add(')')">)</button>
+<button class="key" onclick="add('%')">%</button>
+
+</div>
+
+
+<div class="keypad">
+
+<button class="key clear" onclick="clearAll()">AC</button>
+<button class="key" onclick="backspace()">⌫</button>
+<button class="key operator" onclick="add('%')">%</button>
+<button class="key operator" onclick="add('/')">÷</button>
+
+<button class="key" onclick="add('7')">7</button>
+<button class="key" onclick="add('8')">8</button>
+<button class="key" onclick="add('9')">9</button>
+<button class="key operator" onclick="add('*')">×</button>
+
+<button class="key" onclick="add('4')">4</button>
+<button class="key" onclick="add('5')">5</button>
+<button class="key" onclick="add('6')">6</button>
+<button class="key operator" onclick="add('-')">−</button>
+
+<button class="key" onclick="add('1')">1</button>
+<button class="key" onclick="add('2')">2</button>
+<button class="key" onclick="add('3')">3</button>
+<button class="key operator" onclick="add('+')">+</button>
+
+<button class="key" onclick="add('0')">0</button>
+<button class="key" onclick="add('.')">.</button>
+<button class="key" onclick="add('00')">00</button>
+<button class="key equal" onclick="calculate()">=</button>
+
+</div>
+
+<div class="footer">
+PULSE CALCULATOR • V6
+</div>
+
+</div>
+
+
+<div class="history" id="history">
+
+<div class="history-head">
+<h2>📜 History</h2>
+<button class="icon-btn" onclick="closeHistory()">✕</button>
+</div>
+
+<button class="history-clear" onclick="clearHistory()">
+🗑️ Clear History
+</button>
+
+<div id="historyList"></div>
+
+</div>
+
+
+<script>
+
+var expression = "";
+var angleMode = "DEG";
+var historyData = [];
+var audio = null;
+
+
+/* SOUND */
+
+/* =========================================
+   PREMIUM KEYBOARD SOUND ENGINE
+   ========================================= */
+
+var audio = null;
+
+function playKeySound(type) {
+
+    try {
+
+        var AudioClass =
+            window.AudioContext ||
+            window.webkitAudioContext;
+
+        if (!AudioClass) {
+            return;
+        }
+
+        if (!audio) {
+            audio = new AudioClass();
+        }
+
+        if (audio.state === "suspended") {
+            audio.resume();
+        }
+
+        var now = audio.currentTime;
+
+        var oscillator =
+            audio.createOscillator();
+
+        var gain =
+            audio.createGain();
+
+        var frequency = 520;
+        var duration = 0.09;
+
+        /* Number keys */
+
+        if (type === "number") {
+            frequency = 520;
+        }
+
+        /* Operators */
+
+        if (type === "operator") {
+            frequency = 660;
+        }
+
+        /* Equal */
+
+        if (type === "equal") {
+            frequency = 880;
+            duration = 0.18;
+        }
+
+        /* Clear */
+
+        if (type === "clear") {
+            frequency = 360;
+            duration = 0.12;
+        }
+
+        /* Backspace */
+
+        if (type === "back") {
+            frequency = 430;
+            duration = 0.08;
+        }
+
+        oscillator.type = "triangle";
+
+        oscillator.frequency.setValueAtTime(
+            frequency,
+            now
+        );
+
+        oscillator.frequency.exponentialRampToValueAtTime(
+            frequency * 0.72,
+            now + duration
+        );
+
+        gain.gain.setValueAtTime(
+            0.001,
+            now
+        );
+
+        gain.gain.linearRampToValueAtTime(
+            0.12,
+            now + 0.008
+        );
+
+        gain.gain.exponentialRampToValueAtTime(
+            0.001,
+            now + duration
+        );
+
+        oscillator.connect(gain);
+        gain.connect(audio.destination);
+
+        oscillator.start(now);
+
+        oscillator.stop(
+            now + duration + 0.02
+        );
+
+    } catch (error) {
+
+        console.log("Audio unavailable");
+
+    }
+}
+
+
+/* ADD */
+
+function add(text) {
+
+    playKeySound("number");
+
+    if (expression === "Error") {
+        expression = "";
+    }
+
+    expression += text;
+
+    update();
+}
+
+
+/* UPDATE */
+
+function update() {
+
+    document.getElementById("expression").textContent =
+        displayText(expression);
+
+    document.getElementById("result").textContent =
+        expression || "0";
+
+    document.getElementById("mode").textContent =
+        angleMode + " • READY";
+}
+
+
+/* DISPLAY */
+
+function displayText(text) {
+
+    return String(text)
+        .replace(/\*/g,"×")
+        .replace(/\//g,"÷")
+        .replace(/sqrt/g,"√");
+}
+
+
+/* SIN */
+
+function sinCalc(x) {
+
+    if (angleMode === "DEG") {
+        return Math.sin(x * Math.PI / 180);
+    }
+
+    return Math.sin(x);
+}
+
+
+/* COS */
+
+function cosCalc(x) {
+
+    if (angleMode === "DEG") {
+        return Math.cos(x * Math.PI / 180);
+    }
+
+    return Math.cos(x);
+}
+
+
+/* TAN */
+
+function tanCalc(x) {
+
+    if (angleMode === "DEG") {
+        return Math.tan(x * Math.PI / 180);
+    }
+
+    return Math.tan(x);
+}
+
+
+/* FACTORIAL */
+
+function factorial(x) {
+
+    if (x < 0 || x > 170 || x % 1 !== 0) {
+        throw new Error();
+    }
+
+    var answer = 1;
+    var i;
+
+    for (i = 2; i <= x; i++) {
+        answer = answer * i;
+    }
+
+    return answer;
+}
+
+
+/* CALCULATE */
+
+function calculate() {
+
+    playKeySound("equal");
+
+    if (!expression || expression === "Error") {
+        return;
+    }
+
+    try {
+
+        var original = expression;
+        var math = expression;
+
+        math = math.replace(
+            /π/g,
+            "Math.PI"
+        );
+
+        math = math.replace(
+            /\be\b/g,
+            "Math.E"
+        );
+
+        math = math.replace(
+            /sqrt\(/g,
+            "Math.sqrt("
+        );
+
+        math = math.replace(
+            /log\(/g,
+            "Math.log10("
+        );
+
+        math = math.replace(
+            /ln\(/g,
+            "Math.log("
+        );
+
+        math = math.replace(
+            /sin\(/g,
+            "sinCalc("
+        );
+
+        math = math.replace(
+            /cos\(/g,
+            "cosCalc("
+        );
+
+        math = math.replace(
+            /tan\(/g,
+            "tanCalc("
+        );
+
+        math = math.replace(
+            /\^/g,
+            "**"
+        );
+
+        math = math.replace(
+            /([0-9]+(?:\.[0-9]+)?)%/g,
+            "($1/100)"
+        );
+
+        math = math.replace(
+            /([0-9]+(?:\.[0-9]+)?)!/g,
+            "factorial($1)"
+        );
+
+        var answer = Function(
+            "sinCalc",
+            "cosCalc",
+            "tanCalc",
+            "factorial",
+            "return (" + math + ");"
+        )(
+            sinCalc,
+            cosCalc,
+            tanCalc,
+            factorial
+        );
+
+        if (
+            typeof answer !== "number" ||
+            !isFinite(answer)
+        ) {
+            throw new Error();
+        }
+
+        var finalAnswer =
+            format(answer);
+
+        saveHistory(
+            original,
+            finalAnswer
+        );
+
+        expression =
+            finalAnswer;
+
+        document.getElementById(
+            "expression"
+        ).textContent =
+            displayText(original) + " =";
+
+        document.getElementById(
+            "result"
+        ).textContent =
+            finalAnswer;
+
+    } catch (error) {
+
+        expression = "Error";
+
+        document.getElementById(
+            "expression"
+        ).textContent =
+            "Invalid calculation";
+
+        document.getElementById(
+            "result"
+        ).textContent =
+            "Error";
+
+    }
+}
+
+
+/* FORMAT */
+
+function format(number) {
+
+    if (Object.is(number,-0)) {
+        return "0";
+    }
+
+    if (Number.isInteger(number)) {
+        return String(number);
+    }
+
+    return String(
+        Number(number.toFixed(10))
+    );
+}
+
+
+/* CLEAR */
+
+function clearAll() {
+
+    playKeySound("clear");
+
+    expression = "";
+
+    update();
+}
+
+
+/* BACKSPACE */
+
+function backspace() {
+
+    playKeySound("back");
+
+    if (expression === "Error") {
+        expression = "";
+    }
+
+    expression =
+        expression.slice(0,-1);
+
+    update();
+}
+
+
+/* SCIENTIFIC */
+
+function toggleScientific() {
+
+    playKeySound("operator");
+
+    document.getElementById(
+        "scientific"
+    ).classList.toggle("show");
+}
+
+
+/* ANGLE */
+
+function toggleAngle() {
+
+    playKeySound("operator");
+
+    if (angleMode === "DEG") {
+        angleMode = "RAD";
+    } else {
+        angleMode = "DEG";
+    }
+
+    document.getElementById(
+        "angle"
+    ).textContent =
+        angleMode;
+
+    update();
+}
+
+
+/* HISTORY */
+
+function saveHistory(exp, answer) {
+
+    historyData.unshift({
+        exp: displayText(exp),
+        answer: answer
+    });
+
+    if (historyData.length > 50) {
+        historyData.pop();
+    }
+
+    try {
+        localStorage.setItem(
+            "pulseHistory",
+            JSON.stringify(historyData)
+        );
+    } catch (error) {
+    }
+
+    renderHistory();
+}
+
+
+/* LOAD HISTORY */
+
+try {
+
+    var oldHistory =
+        localStorage.getItem("pulseHistory");
+
+    if (oldHistory) {
+        historyData =
+            JSON.parse(oldHistory);
+    }
+
+    if (!Array.isArray(historyData)) {
+        historyData = [];
+    }
+
+} catch (error) {
+
+    historyData = [];
+}
+
+
+/* RENDER HISTORY */
+
+function renderHistory() {
+
+    var list =
+        document.getElementById(
+            "historyList"
+        );
+
+    if (historyData.length === 0) {
+
+        list.innerHTML =
+            "<p style='text-align:center;color:#8994a8;padding:40px'>No calculations yet.</p>";
+
+        return;
+    }
+
+    var html = "";
+    var i;
+
+    for (i = 0; i < historyData.length; i++) {
+
+        html +=
+            "<div class='history-item'>" +
+            "<div class='history-exp'>" +
+            safe(historyData[i].exp) +
+            "</div>" +
+            "<div class='history-answer'>" +
+            "= " +
+            safe(historyData[i].answer) +
+            "</div>" +
+            "</div>";
+    }
+
+    list.innerHTML = html;
+}
+
+
+/* SAFE TEXT */
+
+function safe(text) {
+
+    return String(text)
+        .replace(/&/g,"&amp;")
+        .replace(/</g,"&lt;")
+        .replace(/>/g,"&gt;")
+        .replace(/"/g,"&quot;");
+}
+
+
+/* OPEN HISTORY */
+
+function openHistory() {
+
+    playKeySound("operator");
+
+    document.getElementById(
+        "history"
+    ).classList.add("show");
+
+    renderHistory();
+}
+
+
+/* CLOSE HISTORY */
+
+function closeHistory() {
+
+    playKeySound("operator");
+
+    document.getElementById(
+        "history"
+    ).classList.remove("show");
+}
+
+
+/* CLEAR HISTORY */
+
+function clearHistory() {
+
+    playKeySound("clear");
+
+    historyData = [];
+
+    try {
+        localStorage.removeItem(
+            "pulseHistory"
+        );
+    } catch (error) {
+    }
+
+    renderHistory();
+}
+
+
+/* COPY */
+
+function copyResult() {
+
+    playKeySound("operator");
+
+    if (
+        !expression ||
+        expression === "Error"
+    ) {
+        return;
+    }
+
+    if (
+        navigator.clipboard &&
+        navigator.clipboard.writeText
+    ) {
+
+        navigator.clipboard.writeText(
+            expression
+        );
+
+    }
+}
+
+
+/* THEME */
+
+function toggleTheme() {
+
+    playKeySound("operator");
+
+    if (
+        document.body.style.background ===
+        "rgb(238, 242, 247)"
+    ) {
+
+        document.body.style.background =
+            "#080b12";
+
+        document.body.style.color =
+            "white";
+
+    } else {
+
+        document.body.style.background =
+            "#eef2f7";
+
+        document.body.style.color =
+            "#111722";
+    }
+}
+
+
+/* KEYBOARD */
+
+document.addEventListener(
+    "keydown",
+    function(event) {
+
+        var key = event.key;
+
+        if (/^[0-9.]$/.test(key)) {
+            add(key);
+        }
+
+        else if (
+            key === "+" ||
+            key === "-" ||
+            key === "*" ||
+            key === "/" ||
+            key === "%"
+        ) {
+            add(key);
+        }
+
+        else if (
+            key === "Enter" ||
+            key === "="
+        ) {
+            calculate();
+        }
+
+        else if (
+            key === "Backspace"
+        ) {
+            backspace();
+        }
+
+        else if (
+            key === "Escape"
+        ) {
+            clearAll();
+        }
+
+    }
+);
+
+
+/* START */
+
+renderHistory();
+update();
+setTimeout(function() {
+    var startup = document.getElementById("startup");
+
+    if (startup) {
+        startup.remove();
+    }
+}, 3000);
+</script>
+
+</body>
+</html>
