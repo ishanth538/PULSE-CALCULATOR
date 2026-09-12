@@ -1,6 +1,6 @@
 {
   "name": "Pulse Calculator",
-  "short_name": "Pulse",
+  "short_name": "Pulse Calculator",
   "description": "Pulse Calculator - Smart, Fast and Scientific Calculator",
   "start_url": "./",
   "display": "standalone",
